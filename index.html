@@ -38,16 +38,16 @@ html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-famil
 #p-score{color:#ffe082;font-size:14px;font-weight:bold;}
 
 /* board area */
-#board-wrap{flex-shrink:0;display:flex;justify-content:center;align-items:center;padding:10px 10px 6px;background:var(--board-bg);}
-#board-canvas{border-radius:10px;display:block;}
+#board-wrap{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:10px;background:var(--board-bg);}
+#board-canvas{border-radius:10px;display:block;max-width:100%;max-height:100%;}
 
 /* hint */
 #p-hint{text-align:center;font-size:12px;color:#888;padding:4px 0;flex-shrink:0;background:var(--board-bg);}
 
 /* tray */
-#tray-wrap{flex:1;overflow-y:auto;padding:10px;background:#f5ede0;}
-#tray{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-content:flex-start;}
-.tray-piece{border-radius:8px;border:2.5px solid var(--orange);cursor:grab;flex-shrink:0;touch-action:none;}
+#tray-wrap{flex:1;overflow-y:auto;padding:6px;background:#f5ede0;}
+#tray{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;align-content:flex-start;}
+.tray-piece{border-radius:6px;border:2px solid var(--orange);cursor:grab;flex-shrink:0;touch-action:none;}
 
 /* clear overlay */
 #clear-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);z-index:200;flex-direction:column;justify-content:center;align-items:center;gap:14px;}
@@ -287,7 +287,8 @@ function openPuzzleScreen(name,srcCanvas){
 
   sourceCanvas=srcCanvas;
   const vw=window.innerWidth;
-  PSIZE=Math.floor((Math.min(vw,400)-20)/COLS);
+  // Board size: 70% of previous size
+  PSIZE=Math.floor((Math.min(vw,400)-20)/COLS * 0.7);
   const BW=PSIZE*COLS,BH=PSIZE*ROWS;
 
   boardCanvas=document.getElementById('board-canvas');
@@ -303,18 +304,20 @@ function openPuzzleScreen(name,srcCanvas){
 
   const tray=document.getElementById('tray');
   tray.innerHTML='';
+  // Tray pieces: smaller size (50% of board piece)
+  const trayPieceSize=Math.floor(PSIZE*0.5);
   pieces.forEach(p=>{
     const pc=document.createElement('canvas');
-    pc.width=PSIZE;pc.height=PSIZE;
+    pc.width=trayPieceSize;pc.height=trayPieceSize;
     pc.className='tray-piece';
     const pCtx=pc.getContext('2d');
     const sx=p.col*(sourceCanvas.width/COLS);
     const sy=p.row*(sourceCanvas.height/ROWS);
     const sw=sourceCanvas.width/COLS;
     const sh=sourceCanvas.height/ROWS;
-    pCtx.drawImage(sourceCanvas,sx,sy,sw,sh,0,0,PSIZE,PSIZE);
+    pCtx.drawImage(sourceCanvas,sx,sy,sw,sh,0,0,trayPieceSize,trayPieceSize);
     pc.dataset.col=p.col;pc.dataset.row=p.row;
-    addDrag(pc);
+    addDrag(pc,trayPieceSize);
     tray.appendChild(pc);
   });
 
@@ -349,7 +352,7 @@ function drawBoard(){
   for(let r=1;r<ROWS;r++){boardCtx.beginPath();boardCtx.moveTo(0,r*PSIZE);boardCtx.lineTo(boardCanvas.width,r*PSIZE);boardCtx.stroke();}
 }
 
-function addDrag(pc){
+function addDrag(pc,pieceSize){
   let clone=null;
   function getXY(e){
     if(e.touches)return{x:e.touches[0].clientX,y:e.touches[0].clientY};
@@ -359,11 +362,11 @@ function addDrag(pc){
     e.preventDefault();
     const {x,y}=getXY(e);
     clone=pc.cloneNode(true);
-    clone.style.cssText=`position:fixed;z-index:999;pointer-events:none;opacity:0.9;width:${PSIZE}px;height:${PSIZE}px;border-radius:8px;border:2.5px solid #ff7043;`;
+    clone.style.cssText=`position:fixed;z-index:999;pointer-events:none;opacity:0.9;width:${pieceSize}px;height:${pieceSize}px;border-radius:6px;border:2px solid #ff7043;`;
     pos(x,y);
     document.body.appendChild(clone);
   }
-  function pos(x,y){clone.style.left=(x-PSIZE/2)+'px';clone.style.top=(y-PSIZE/2)+'px';}
+  function pos(x,y){clone.style.left=(x-pieceSize/2)+'px';clone.style.top=(y-pieceSize/2)+'px';}
   function onMove(e){e.preventDefault();if(!clone)return;const{x,y}=getXY(e);pos(x,y);}
   function onEnd(e){
     e.preventDefault();
@@ -372,11 +375,14 @@ function addDrag(pc){
     const coords=e.changedTouches?{x:e.changedTouches[0].clientX,y:e.changedTouches[0].clientY}:{x:e.clientX,y:e.clientY};
     const rect=boardCanvas.getBoundingClientRect();
     const bx=coords.x-rect.left,by=coords.y-rect.top;
-    if(bx>=0&&by>=0&&bx<boardCanvas.width&&by<boardCanvas.height){
-      const tc=Math.floor(bx/PSIZE),tr=Math.floor(by/PSIZE);
+    const scale=boardCanvas.width/boardCanvas.getBoundingClientRect().width;
+    const scaledX=bx*scale,scaledY=by*scale;
+    if(scaledX>=0&&scaledY>=0&&scaledX<boardCanvas.width&&scaledY<boardCanvas.height){
+      const tc=Math.floor(scaledX/PSIZE),tr=Math.floor(scaledY/PSIZE);
       const pcol=parseInt(pc.dataset.col),prow=parseInt(pc.dataset.row);
       if(tc===pcol&&tr===prow&&!boardPieces[tr*COLS+tc].filled){
         boardPieces[tr*COLS+tc].filled=true;
+        playCorrectSound();
         drawBoard();
         pc.remove();
         checkComplete();
@@ -434,6 +440,21 @@ function closePuzzle(){
 }
 
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}}
+
+// ===== SOUND EFFECT =====
+function playCorrectSound(){
+  const audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+  const osc=audioCtx.createOscillator();
+  const gain=audioCtx.createGain();
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+  osc.frequency.value=880; // ポン音の周波数
+  osc.type='sine';
+  gain.gain.setValueAtTime(0.3,audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.01,audioCtx.currentTime+0.15);
+  osc.start(audioCtx.currentTime);
+  osc.stop(audioCtx.currentTime+0.15);
+}
 
 renderGrid();
 </script>
