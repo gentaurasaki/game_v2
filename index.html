@@ -288,7 +288,7 @@ function openPuzzleScreen(name,srcCanvas){
   sourceCanvas=srcCanvas;
   const vw=window.innerWidth;
   // Board size: 70% of previous size
-  PSIZE=Math.floor((Math.min(vw,400)-20)/COLS * 0.7);
+  PSIZE=Math.floor((Math.min(vw,400)-20)/COLS * 0.9);
   const BW=PSIZE*COLS,BH=PSIZE*ROWS;
 
   boardCanvas=document.getElementById('board-canvas');
@@ -305,7 +305,7 @@ function openPuzzleScreen(name,srcCanvas){
   const tray=document.getElementById('tray');
   tray.innerHTML='';
   // Tray pieces: smaller size (50% of board piece)
-  const trayPieceSize=Math.floor(PSIZE*0.5);
+  const trayPieceSize=Math.floor(PSIZE*0.7);
   pieces.forEach(p=>{
     const pc=document.createElement('canvas');
     pc.width=trayPieceSize;pc.height=trayPieceSize;
