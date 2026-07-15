@@ -160,8 +160,9 @@ function setCat(cat,btn){
   currentCat=cat;
   document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
-  renderGrid();
 }
+  
+  renderGrid();
 
 function renderGrid(){
   const grid=document.getElementById('puzzle-grid');
