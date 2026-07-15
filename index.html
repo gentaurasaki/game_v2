@@ -6,177 +6,315 @@
 <title>🧩 えあわせパズル</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-body{background:#fff9f0;font-family:'Helvetica Neue',sans-serif;overflow-x:hidden;min-height:100vh;}
-header{background:#ff7043;padding:12px 16px;text-align:center;box-shadow:0 3px 8px rgba(0,0,0,0.15);}
-header h1{color:#fff;font-size:22px;letter-spacing:2px;}
-#category-bar{display:flex;justify-content:center;gap:10px;padding:12px;background:#ffe0b2;}
-.cat-btn{background:#fff;border:3px solid #ff7043;border-radius:30px;padding:8px 18px;font-size:16px;font-weight:bold;color:#ff7043;cursor:pointer;transition:all 0.2s;}
-.cat-btn.active{background:#ff7043;color:#fff;}
-#score-bar{display:flex;justify-content:center;align-items:center;gap:20px;padding:8px;font-size:16px;font-weight:bold;color:#5d4037;}
-#puzzle-grid{display:flex;flex-wrap:wrap;justify-content:center;gap:16px;padding:16px;}
-.puzzle-card{background:#fff;border-radius:16px;box-shadow:0 4px 12px rgba(0,0,0,0.1);padding:12px;width:160px;cursor:pointer;transition:transform 0.2s;user-select:none;}
-.puzzle-card:hover{transform:scale(1.04);}
-.puzzle-card canvas{border-radius:10px;display:block;margin:0 auto;}
-.puzzle-card .label{text-align:center;font-size:18px;font-weight:bold;margin-top:8px;color:#333;}
-#puzzle-screen{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:#fff9f0;z-index:100;flex-direction:column;align-items:center;}
-#back-btn{position:absolute;top:12px;left:12px;background:#ff7043;color:#fff;border:none;border-radius:50px;padding:8px 16px;font-size:18px;cursor:pointer;z-index:200;}
-#puzzle-title{margin-top:60px;font-size:24px;font-weight:bold;color:#5d4037;}
-#puzzle-hint{font-size:14px;color:#888;margin:4px 0 10px;}
-#puzzle-area{position:relative;margin:0 auto;}
-#tray{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;padding:12px 16px;background:#ffe0b2;border-radius:16px;margin:12px 16px;}
-#clear-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.55);z-index:300;justify-content:center;align-items:center;flex-direction:column;gap:16px;}
-#clear-overlay h2{color:#fff;font-size:36px;}
-#clear-overlay p{color:#ffe082;font-size:20px;}
-#next-btn{background:#ff7043;color:#fff;border:none;border-radius:50px;padding:14px 36px;font-size:20px;cursor:pointer;margin-top:8px;}
-.star{font-size:48px;animation:pop 0.5s ease both;}
+:root{--orange:#ff7043;--yellow:#ffb300;--bg:#fff9f0;--board-bg:#e8e0d0;}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);font-family:'Helvetica Neue',sans-serif;touch-action:none;}
+
+/* ===== TOP SCREEN ===== */
+#top-screen{display:flex;flex-direction:column;height:100vh;}
+#top-header{background:var(--orange);padding:10px 14px;text-align:center;flex-shrink:0;}
+#top-header h1{color:#fff;font-size:20px;letter-spacing:2px;}
+#cat-bar{display:flex;gap:8px;padding:10px 12px;background:#ffe0b2;flex-shrink:0;overflow-x:auto;}
+.cat-btn{flex-shrink:0;background:#fff;border:2.5px solid var(--orange);border-radius:30px;padding:6px 14px;font-size:14px;font-weight:bold;color:var(--orange);cursor:pointer;}
+.cat-btn.active{background:var(--orange);color:#fff;}
+#grid-scroll{flex:1;overflow-y:auto;padding:12px;}
+#puzzle-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.puzzle-card{background:#fff;border-radius:14px;box-shadow:0 3px 8px rgba(0,0,0,0.12);padding:8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;}
+.puzzle-card canvas{border-radius:8px;width:100%;height:auto;display:block;}
+.puzzle-card .lbl{font-size:13px;font-weight:bold;margin-top:5px;color:#333;text-align:center;}
+#upload-card{background:#fff;border-radius:14px;box-shadow:0 3px 8px rgba(0,0,0,0.12);padding:8px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100px;border:2.5px dashed var(--orange);}
+#upload-card .icon{font-size:28px;}
+#upload-card .lbl{font-size:12px;font-weight:bold;color:var(--orange);margin-top:4px;text-align:center;}
+#file-input{display:none;}
+
+/* ===== SAVED IMAGES ===== */
+#saved-section{margin-top:4px;}
+#saved-title{font-size:13px;font-weight:bold;color:#888;padding:4px 4px 6px;}
+
+/* ===== PUZZLE SCREEN ===== */
+#puzzle-screen{display:none;flex-direction:column;height:100vh;position:fixed;top:0;left:0;right:0;bottom:0;background:var(--bg);z-index:100;}
+#p-header{background:var(--orange);padding:8px 14px;display:flex;align-items:center;gap:10px;flex-shrink:0;}
+#back-btn{background:rgba(255,255,255,0.25);border:none;color:#fff;border-radius:50px;padding:5px 12px;font-size:14px;cursor:pointer;}
+#p-title{color:#fff;font-size:16px;font-weight:bold;flex:1;}
+#p-score{color:#ffe082;font-size:14px;font-weight:bold;}
+
+/* board area */
+#board-wrap{flex-shrink:0;display:flex;justify-content:center;align-items:center;padding:10px 10px 6px;background:var(--board-bg);}
+#board-canvas{border-radius:10px;display:block;}
+
+/* hint */
+#p-hint{text-align:center;font-size:12px;color:#888;padding:4px 0;flex-shrink:0;background:var(--board-bg);}
+
+/* tray */
+#tray-wrap{flex:1;overflow-y:auto;padding:10px;background:#f5ede0;}
+#tray{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-content:flex-start;}
+.tray-piece{border-radius:8px;border:2.5px solid var(--orange);cursor:grab;flex-shrink:0;touch-action:none;}
+
+/* clear overlay */
+#clear-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);z-index:200;flex-direction:column;justify-content:center;align-items:center;gap:14px;}
+#clear-overlay h2{color:#fff;font-size:34px;}
+#clear-overlay p{color:#ffe082;font-size:18px;}
+.ov-btn{background:var(--orange);color:#fff;border:none;border-radius:50px;padding:12px 30px;font-size:18px;cursor:pointer;margin:4px;}
+.star{font-size:44px;animation:pop 0.4s ease both;}
 @keyframes pop{0%{transform:scale(0);}60%{transform:scale(1.3);}100%{transform:scale(1);}}
 </style>
 </head>
 <body>
 
-<header><h1>🧩 えあわせパズル</h1></header>
-<div id="category-bar">
-  <button class="cat-btn active" onclick="setCategory('all')">ぜんぶ</button>
-  <button class="cat-btn" onclick="setCategory('animal')">🐘 どうぶつ</button>
-  <button class="cat-btn" onclick="setCategory('insect')">🐛 こんちゅう</button>
-  <button class="cat-btn" onclick="setCategory('chara')">😊 キャラ</button>
-</div>
-<div id="score-bar">⭐ <span id="score">0</span> てん</div>
-<div id="puzzle-grid"></div>
-
-<div id="puzzle-screen">
-  <button id="back-btn" onclick="closePuzzle()">← もどる</button>
-  <div id="puzzle-title"></div>
-  <div id="puzzle-hint">ピースをえのうえにおこう！</div>
-  <div id="puzzle-area">
-    <canvas id="board-canvas"></canvas>
+<!-- TOP SCREEN -->
+<div id="top-screen">
+  <div id="top-header"><h1>🧩 えあわせパズル</h1></div>
+  <div id="cat-bar">
+    <button class="cat-btn active" onclick="setCat('all',this)">ぜんぶ</button>
+    <button class="cat-btn" onclick="setCat('animal',this)">🐘 どうぶつ</button>
+    <button class="cat-btn" onclick="setCat('insect',this)">🐛 むし</button>
+    <button class="cat-btn" onclick="setCat('chara',this)">😊 キャラ</button>
+    <button class="cat-btn" onclick="setCat('my',this)">📷 マイせつ</button>
   </div>
-  <div id="tray"></div>
+  <div id="grid-scroll">
+    <div id="puzzle-grid"></div>
+    <div id="saved-section"></div>
+  </div>
 </div>
 
+<!-- PUZZLE SCREEN -->
+<div id="puzzle-screen">
+  <div id="p-header">
+    <button id="back-btn" onclick="closePuzzle()">← もどる</button>
+    <div id="p-title"></div>
+    <div id="p-score">⭐ <span id="score-val">0</span></div>
+  </div>
+  <div id="board-wrap"><canvas id="board-canvas"></canvas></div>
+  <div id="p-hint">ピースをうえのマスにおこう！</div>
+  <div id="tray-wrap"><div id="tray"></div></div>
+</div>
+
+<!-- CLEAR OVERLAY -->
 <div id="clear-overlay">
-  <div><span class="star" style="animation-delay:0s">⭐</span><span class="star" style="animation-delay:0.15s">⭐</span><span class="star" style="animation-delay:0.3s">⭐</span></div>
+  <div>
+    <span class="star" style="animation-delay:0s">⭐</span>
+    <span class="star" style="animation-delay:0.15s">⭐</span>
+    <span class="star" style="animation-delay:0.3s">⭐</span>
+  </div>
   <h2>やったー！🎉</h2>
   <p id="clear-msg"></p>
-  <button id="next-btn" onclick="nextPuzzle()">つぎのパズル ▶</button>
+  <div>
+    <button class="ov-btn" onclick="nextPuzzle()">つぎ ▶</button>
+    <button class="ov-btn" onclick="closePuzzle()">もどる</button>
+  </div>
 </div>
 
+<input type="file" id="file-input" accept="image/*">
+
 <script>
-const COLS=3,ROWS=3;
-const subjects=[
-  {id:'elephant',cat:'animal',name:'ぞう',emoji:'🐘',bg:'#e3f2fd',draw:drawElephant},
-  {id:'lion',cat:'animal',name:'らいおん',emoji:'🦁',bg:'#fff9c4',draw:drawLion},
-  {id:'panda',cat:'animal',name:'ぱんだ',emoji:'🐼',bg:'#f3e5f5',draw:drawPanda},
-  {id:'penguin',cat:'animal',name:'ぺんぎん',emoji:'🐧',bg:'#e8f5e9',draw:drawPenguin},
-  {id:'butterfly',cat:'insect',name:'ちょうちょ',emoji:'🦋',bg:'#fce4ec',draw:drawButterfly},
-  {id:'ladybug',cat:'insect',name:'てんとうむし',emoji:'🐞',bg:'#ffebee',draw:drawLadybug},
-  {id:'bee',cat:'insect',name:'はちさん',emoji:'🐝',bg:'#fff8e1',draw:drawBee},
-  {id:'star',cat:'chara',name:'ほし',emoji:'⭐',bg:'#fffde7',draw:drawStar},
-  {id:'heart',cat:'chara',name:'はーと',emoji:'❤️',bg:'#fce4ec',draw:drawHeart},
-  {id:'rocket',cat:'chara',name:'ろけっと',emoji:'🚀',bg:'#e8eaf6',draw:drawRocket},
+// ===== DRAW FUNCTIONS =====
+function drawElephant(ctx,W,H){const cx=W/2,cy=H/2,s=Math.min(W,H)/160;ctx.fillStyle='#90a4ae';ctx.beginPath();ctx.ellipse(cx,cy+10*s,55*s,45*s,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#b0bec5';ctx.beginPath();ctx.ellipse(cx,cy-40*s,38*s,32*s,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#90a4ae';ctx.beginPath();ctx.ellipse(cx-40*s,cy-30*s,12*s,18*s,-0.3,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.ellipse(cx+40*s,cy-30*s,12*s,18*s,0.3,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.moveTo(cx+10*s,cy-25*s);ctx.bezierCurveTo(cx+30*s,cy+5*s,cx+20*s,cy+40*s,cx,cy+55*s);ctx.lineWidth=10*s;ctx.strokeStyle='#90a4ae';ctx.lineCap='round';ctx.stroke();ctx.fillStyle='#333';ctx.beginPath();ctx.arc(cx-12*s,cy-48*s,5*s,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.arc(cx+12*s,cy-48*s,5*s,0,Math.PI*2);ctx.fill();}
+function drawLion(ctx,W,H){const cx=W/2,cy=H/2,s=Math.min(W,H)/160;ctx.fillStyle='#e65100';ctx.beginPath();ctx.arc(cx,cy-10*s,60*s,0,Math.PI*2);ctx.fill();ctx.fillStyle='#ffcc80';ctx.beginPath();ctx.arc(cx,cy-10*s,42*s,0,Math.PI*2);ctx.fill();ctx.fillStyle='#ffe0b2';ctx.beginPath();ctx.ellipse(cx,cy+30*s,35*s,22*s,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#fff';ctx.beginPath();ctx.ellipse(cx,cy+8*s,18*s,12*s,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#e65100';ctx.beginPath();ctx.arc(cx,cy+5*s,8*s,0,Math.PI*2);ctx.fill();ctx.fillStyle='#333';ctx.beginPath();ctx.arc(cx-16*s,cy-18*s,7*s,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.arc(cx+16*s,cy-18*s,7*s,0,Math.PI*2);ctx.fill();}
+function drawPanda(ctx,W,H){const cx=W/2,cy=H/2,s=Math.min(W,H)/160;ctx.fillStyle='#fff';ctx.beginPath();ctx.ellipse(cx,cy+15*s,50*s,45*s,0,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.ellipse(cx,cy-35*s,38*s,35*s,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#333';ctx.beginPath();ctx.ellipse(cx-22*s,cy-48*s,12*s,14*s,0,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.ellipse(cx+22*s,cy-48*s,12*s,14*s,0,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.ellipse(cx-14*s,cy-32*s,12*s,9*s,-0.4,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.ellipse(cx+14*s,cy-32*s,12*s,9*s,0.4,0,Math.PI*2);ctx.fill();ctx.fillStyle='#555';ctx.beginPath();ctx.arc(cx-12*s,cy-32*s,5*s,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.arc(cx+12*s,cy-32*s,5*s,0,Math.PI*2);ctx.fill();ctx.fillStyle='#333';ctx.beginPath();ctx.arc(cx,cy-22*s,8*s,0,Math.PI*2);ctx.fill();}
+function drawPenguin(ctx,W,H){const cx=W/2,cy=H/2,s=Math.min(W,H)/160;ctx.fillStyle='#1a237e';ctx.beginPath();ctx.ellipse(cx,cy+15*s,42*s,52*s,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#fff';ctx.beginPath();ctx.ellipse(cx,cy+20*s,26*s,38*s,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#1a237e';ctx.beginPath();ctx.ellipse(cx,cy-42*s,28*s,26*s,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(cx-10*s,cy-46*s,7*s,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.arc(cx+10*s,cy-46*s,7*s,0,Math.PI*2);ctx.fill();ctx.fillStyle='#333';ctx.beginPath();ctx.arc(cx-10*s,cy-46*s,4*s,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.arc(cx+10*s,cy-46*s,4*s,0,Math.PI*2);ctx.fill();ctx.fillStyle='#ff8f00';ctx.beginPath();ctx.moveTo(cx,cy-35*s);ctx.lineTo(cx-9*s,cy-28*s);ctx.lineTo(cx+9*s,cy-28*s);ctx.closePath();ctx.fill();}
+function drawButterfly(ctx,W,H){const cx=W/2,cy=H/2,s=Math.min(W,H)/160;ctx.fillStyle='#f06292';ctx.beginPath();ctx.ellipse(cx-30*s,cy-20*s,38*s,28*s,0.5,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.ellipse(cx+30*s,cy-20*s,38*s,28*s,-0.5,0,Math.PI*2);ctx.fill();ctx.fillStyle='#f8bbd0';ctx.beginPath();ctx.ellipse(cx-28*s,cy+18*s,28*s,20*s,0.3,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.ellipse(cx+28*s,cy+18*s,28*s,20*s,-0.3,0,Math.PI*2);ctx.fill();ctx.fillStyle='#fff176';ctx.beginPath();ctx.arc(cx-25*s,cy-22*s,10*s,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.arc(cx+25*s,cy-22*s,10*s,0,Math.PI*2);ctx.fill();ctx.fillStyle='#333';ctx.beginPath();ctx.ellipse(cx,cy,6*s,40*s,0,0,Math.PI*2);ctx.fill();}
+function drawLadybug(ctx,W,H){const cx=W/2,cy=H/2,s=Math.min(W,H)/160;ctx.fillStyle='#e53935';ctx.beginPath();ctx.arc(cx,cy+5*s,55*s,Math.PI,0);ctx.closePath();ctx.fill();ctx.fillStyle='#333';ctx.beginPath();ctx.arc(cx,cy-42*s,20*s,0,Math.PI*2);ctx.fill();ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(cx-8*s,cy-44*s,5*s,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.arc(cx+8*s,cy-44*s,5*s,0,Math.PI*2);ctx.fill();ctx.fillStyle='#333';ctx.beginPath();ctx.moveTo(cx,cy-20*s);ctx.lineTo(cx,cy+10*s);ctx.lineWidth=4*s;ctx.stroke();ctx.beginPath();ctx.arc(cx-20*s,cy-5*s,14*s,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.arc(cx+20*s,cy-5*s,14*s,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.arc(cx-18*s,cy+22*s,10*s,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.arc(cx+18*s,cy+22*s,10*s,0,Math.PI*2);ctx.fill();}
+function drawBee(ctx,W,H){const cx=W/2,cy=H/2,s=Math.min(W,H)/160;ctx.fillStyle='#f9a825';ctx.beginPath();ctx.ellipse(cx,cy+10*s,32*s,44*s,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#333';ctx.fillRect(cx-32*s,cy-8*s,64*s,12*s);ctx.fillRect(cx-32*s,cy+12*s,64*s,12*s);ctx.fillStyle='rgba(200,230,255,0.6)';ctx.beginPath();ctx.ellipse(cx-30*s,cy-25*s,28*s,14*s,-0.4,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.ellipse(cx+30*s,cy-25*s,28*s,14*s,0.4,0,Math.PI*2);ctx.fill();ctx.fillStyle='#f9a825';ctx.beginPath();ctx.ellipse(cx,cy-35*s,20*s,18*s,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#333';ctx.beginPath();ctx.arc(cx-7*s,cy-38*s,4*s,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.arc(cx+7*s,cy-38*s,4*s,0,Math.PI*2);ctx.fill();}
+function drawStar(ctx,W,H){const cx=W/2,cy=H/2,s=Math.min(W,H)/160;ctx.fillStyle='#ffd600';ctx.beginPath();for(let i=0;i<5;i++){const a=i*Math.PI*2/5-Math.PI/2,b=a+Math.PI/5;if(i===0)ctx.moveTo(cx+Math.cos(a)*65*s,cy+Math.sin(a)*65*s);else ctx.lineTo(cx+Math.cos(a)*65*s,cy+Math.sin(a)*65*s);ctx.lineTo(cx+Math.cos(b)*28*s,cy+Math.sin(b)*28*s);}ctx.closePath();ctx.fill();}
+function drawHeart(ctx,W,H){const cx=W/2,cy=H/2,s=Math.min(W,H)/160;ctx.fillStyle='#e53935';ctx.beginPath();ctx.moveTo(cx,cy+45*s);ctx.bezierCurveTo(cx-80*s,cy,cx-80*s,cy-50*s,cx,cy-20*s);ctx.bezierCurveTo(cx+80*s,cy-50*s,cx+80*s,cy,cx,cy+45*s);ctx.fill();}
+function drawRocket(ctx,W,H){const cx=W/2,cy=H/2,s=Math.min(W,H)/160;ctx.fillStyle='#e53935';ctx.beginPath();ctx.moveTo(cx,cy-65*s);ctx.lineTo(cx-22*s,cy+10*s);ctx.lineTo(cx+22*s,cy+10*s);ctx.closePath();ctx.fill();ctx.fillStyle='#e8eaf6';ctx.fillRect(cx-22*s,cy+10*s,44*s,40*s);ctx.fillStyle='#42a5f5';ctx.beginPath();ctx.arc(cx,cy-10*s,14*s,0,Math.PI*2);ctx.fill();ctx.fillStyle='#e53935';ctx.beginPath();ctx.moveTo(cx-22*s,cy+10*s);ctx.lineTo(cx-36*s,cy+30*s);ctx.lineTo(cx-22*s,cy+50*s);ctx.closePath();ctx.fill();ctx.beginPath();ctx.moveTo(cx+22*s,cy+10*s);ctx.lineTo(cx+36*s,cy+30*s);ctx.lineTo(cx+22*s,cy+50*s);ctx.closePath();ctx.fill();}
+
+const PRESETS=[
+  {id:'elephant',cat:'animal',name:'ぞう',bg:'#e3f2fd',draw:drawElephant},
+  {id:'lion',cat:'animal',name:'らいおん',bg:'#fff9c4',draw:drawLion},
+  {id:'panda',cat:'animal',name:'ぱんだ',bg:'#f3e5f5',draw:drawPanda},
+  {id:'penguin',cat:'animal',name:'ぺんぎん',bg:'#e8f5e9',draw:drawPenguin},
+  {id:'butterfly',cat:'insect',name:'ちょうちょ',bg:'#fce4ec',draw:drawButterfly},
+  {id:'ladybug',cat:'insect',name:'てんとうむし',bg:'#ffebee',draw:drawLadybug},
+  {id:'bee',cat:'insect',name:'はちさん',bg:'#fff8e1',draw:drawBee},
+  {id:'star',cat:'chara',name:'ほし',bg:'#fffde7',draw:drawStar},
+  {id:'heart',cat:'chara',name:'はーと',bg:'#fce4ec',draw:drawHeart},
+  {id:'rocket',cat:'chara',name:'ろけっと',bg:'#e8eaf6',draw:drawRocket},
 ];
 
-let score=0, currentCat='all', currentSubjectIdx=0;
-let pieces=[], boardPieces=[], dragging=null, dragOffX=0, dragOffY=0;
-let PSIZE, boardCanvas, boardCtx, sourceCanvas;
-
-function setCategory(cat){
-  currentCat=cat;
-  document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));
-  event.target.classList.add('active');
-  renderGrid();
+// ===== LOCALSTORAGE =====
+function getSavedImages(){
+  try{const d=localStorage.getItem('puzzle_images');return d?JSON.parse(d):[];}catch(e){return[];}
+}
+function saveImage(name,dataUrl){
+  try{
+    const imgs=getSavedImages();
+    imgs.unshift({id:'my_'+Date.now(),name,dataUrl,cat:'my'});
+    if(imgs.length>10)imgs.pop();
+    localStorage.setItem('puzzle_images',JSON.stringify(imgs));
+  }catch(e){alert('保存できませんでした（容量不足の可能性があります）');}
+}
+function deleteSavedImage(id){
+  const imgs=getSavedImages().filter(i=>i.id!==id);
+  localStorage.setItem('puzzle_images',JSON.stringify(imgs));
 }
 
-function getFiltered(){
-  if(currentCat==='all') return subjects;
-  return subjects.filter(s=>s.cat===currentCat);
+// ===== GRID =====
+let currentCat='all';
+let score=0;
+
+function setCat(cat,btn){
+  currentCat=cat;
+  document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderGrid();
 }
 
 function renderGrid(){
   const grid=document.getElementById('puzzle-grid');
   grid.innerHTML='';
-  getFiltered().forEach((s,i)=>{
+  const saved=getSavedImages();
+
+  // upload card (always visible or when cat=my/all)
+  if(currentCat==='all'||currentCat==='my'){
+    const up=document.createElement('div');
+    up.id='upload-card';
+    up.innerHTML='<div class="icon">📷</div><div class="lbl">しゃしんを<br>よみこむ</div>';
+    up.onclick=()=>document.getElementById('file-input').click();
+    grid.appendChild(up);
+  }
+
+  // saved images
+  if(currentCat==='all'||currentCat==='my'){
+    saved.forEach(img=>{
+      const card=makeImageCard(img);
+      grid.appendChild(card);
+    });
+  }
+
+  // presets
+  const presets=currentCat==='my'?[]:PRESETS.filter(p=>currentCat==='all'||p.cat===currentCat);
+  presets.forEach(p=>{
+    const c=document.createElement('canvas');
+    c.width=120;c.height=120;
+    const ctx=c.getContext('2d');
+    ctx.fillStyle=p.bg;ctx.fillRect(0,0,120,120);
+    p.draw(ctx,120,120);
     const card=document.createElement('div');
     card.className='puzzle-card';
-    const c=document.createElement('canvas');
-    c.width=130;c.height=130;
-    const ctx=c.getContext('2d');
-    ctx.fillStyle=s.bg;ctx.beginPath();ctx.roundRect(0,0,130,130,12);ctx.fill();
-    s.draw(ctx,130,130);
-    const lbl=document.createElement('div');
-    lbl.className='label';lbl.textContent=s.emoji+' '+s.name;
+    const lbl=document.createElement('div');lbl.className='lbl';lbl.textContent=p.name;
     card.appendChild(c);card.appendChild(lbl);
-    card.onclick=()=>startPuzzle(i);
+    card.onclick=()=>startPreset(p);
     grid.appendChild(card);
   });
 }
 
-function startPuzzle(filteredIdx){
-  const filtered=getFiltered();
-  currentSubjectIdx=subjects.indexOf(filtered[filteredIdx]);
-  openPuzzleScreen();
+function makeImageCard(img){
+  const card=document.createElement('div');
+  card.className='puzzle-card';
+  card.style.position='relative';
+  const c=document.createElement('canvas');
+  c.width=120;c.height=120;
+  const ctx=c.getContext('2d');
+  const image=new Image();
+  image.onload=()=>{
+    const sc=Math.min(120/image.width,120/image.height);
+    const dw=image.width*sc,dh=image.height*sc;
+    ctx.fillStyle='#ddd';ctx.fillRect(0,0,120,120);
+    ctx.drawImage(image,(120-dw)/2,(120-dh)/2,dw,dh);
+  };
+  image.src=img.dataUrl;
+  const lbl=document.createElement('div');lbl.className='lbl';lbl.textContent=img.name||'マイしゃしん';
+  const del=document.createElement('div');
+  del.style.cssText='position:absolute;top:4px;right:4px;background:rgba(0,0,0,0.5);color:#fff;border-radius:50%;width:20px;height:20px;font-size:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;';
+  del.textContent='×';
+  del.onclick=(e)=>{e.stopPropagation();if(confirm('けしますか？')){deleteSavedImage(img.id);renderGrid();}};
+  card.appendChild(c);card.appendChild(lbl);card.appendChild(del);
+  card.onclick=()=>startImagePuzzle(img);
+  return card;
 }
 
-function openPuzzleScreen(){
-  const s=subjects[currentSubjectIdx];
-  document.getElementById('puzzle-screen').style.display='flex';
-  document.getElementById('puzzle-title').textContent=s.emoji+' '+s.name+' のパズル';
-  buildPuzzle(s);
+// ===== FILE UPLOAD =====
+document.getElementById('file-input').addEventListener('change',function(e){
+  const file=e.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=function(ev){
+    const dataUrl=ev.target.result;
+    const name=file.name.replace(/\.[^.]+$/,'').slice(0,10)||'マイしゃしん';
+    saveImage(name,dataUrl);
+    renderGrid();
+    // start puzzle immediately
+    startImagePuzzle({id:'my_new',name,dataUrl});
+  };
+  reader.readAsDataURL(file);
+  this.value='';
+});
+
+// ===== PUZZLE ENGINE =====
+const COLS=3,ROWS=3;
+let boardPieces=[],pieces=[],PSIZE,boardCanvas,boardCtx,sourceCanvas;
+let currentPreset=null,currentImageData=null,allSubjects=[];
+
+function startPreset(p){
+  currentPreset=p;currentImageData=null;
+  const idx=PRESETS.indexOf(p);
+  allSubjects=PRESETS;
+  buildPuzzleFromDraw(p.name,p.bg,p.draw,idx);
 }
 
-function closePuzzle(){
-  document.getElementById('puzzle-screen').style.display='none';
-  document.getElementById('clear-overlay').style.display='none';
+function startImagePuzzle(img){
+  currentPreset=null;currentImageData=img;
+  const image=new Image();
+  image.onload=()=>{
+    const size=Math.min(window.innerWidth-20,360);
+    const sc=document.createElement('canvas');
+    sc.width=size;sc.height=size;
+    const ctx=sc.getContext('2d');
+    ctx.fillStyle='#eee';ctx.fillRect(0,0,size,size);
+    const isc=Math.min(size/image.width,size/image.height);
+    const dw=image.width*isc,dh=image.height*isc;
+    ctx.drawImage(image,(size-dw)/2,(size-dh)/2,dw,dh);
+    openPuzzleScreen(img.name||'マイしゃしん',sc);
+  };
+  image.src=img.dataUrl;
 }
 
-function nextPuzzle(){
-  document.getElementById('clear-overlay').style.display='none';
-  currentSubjectIdx=(currentSubjectIdx+1)%subjects.length;
-  openPuzzleScreen();
+function buildPuzzleFromDraw(name,bg,drawFn,idx){
+  const size=Math.min(window.innerWidth-20,360);
+  const sc=document.createElement('canvas');
+  sc.width=size;sc.height=size;
+  const ctx=sc.getContext('2d');
+  ctx.fillStyle=bg;ctx.fillRect(0,0,size,size);
+  drawFn(ctx,size,size);
+  openPuzzleScreen(name,sc);
 }
 
-function buildPuzzle(s){
-  const vw=Math.min(window.innerWidth,480);
-  PSIZE=Math.floor((vw-32)/COLS);
-  const W=PSIZE*COLS, H=PSIZE*ROWS;
+function openPuzzleScreen(name,srcCanvas){
+  document.getElementById('top-screen').style.display='none';
+  const ps=document.getElementById('puzzle-screen');
+  ps.style.display='flex';
+  document.getElementById('p-title').textContent=name+'のパズル';
+  document.getElementById('score-val').textContent=score;
 
-  sourceCanvas=document.createElement('canvas');
-  sourceCanvas.width=W;sourceCanvas.height=H;
-  const sCtx=sourceCanvas.getContext('2d');
-  sCtx.fillStyle=s.bg;sCtx.fillRect(0,0,W,H);
-  s.draw(sCtx,W,H);
+  sourceCanvas=srcCanvas;
+  const vw=window.innerWidth;
+  PSIZE=Math.floor((Math.min(vw,400)-20)/COLS);
+  const BW=PSIZE*COLS,BH=PSIZE*ROWS;
 
   boardCanvas=document.getElementById('board-canvas');
-  boardCanvas.width=W;boardCanvas.height=H;
+  boardCanvas.width=BW;boardCanvas.height=BH;
   boardCtx=boardCanvas.getContext('2d');
-  document.getElementById('puzzle-area').style.width=W+'px';
 
-  pieces=[];
-  boardPieces=[];
-  for(let r=0;r<ROWS;r++){
-    for(let c=0;c<COLS;c++){
-      const idx=r*COLS+c;
-      pieces.push({idx,col:c,row:r,placed:false});
-      boardPieces.push({idx,col:c,row:r,filled:false});
-    }
+  boardPieces=[];pieces=[];
+  for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++){
+    boardPieces.push({col:c,row:r,filled:false});
+    pieces.push({col:c,row:r,placed:false});
   }
-
   shuffle(pieces);
 
   const tray=document.getElementById('tray');
   tray.innerHTML='';
-  pieces.forEach((p,i)=>{
+  pieces.forEach(p=>{
     const pc=document.createElement('canvas');
     pc.width=PSIZE;pc.height=PSIZE;
-    pc.style.borderRadius='10px';
-    pc.style.border='3px solid #ff7043';
-    pc.style.cursor='grab';
+    pc.className='tray-piece';
     const pCtx=pc.getContext('2d');
-    pCtx.drawImage(sourceCanvas,p.col*PSIZE,p.row*PSIZE,PSIZE,PSIZE,0,0,PSIZE,PSIZE);
-    pc.dataset.idx=p.idx;
-    pc.dataset.col=p.col;
-    pc.dataset.row=p.row;
-    addDragToTrayPiece(pc);
+    const sx=p.col*(sourceCanvas.width/COLS);
+    const sy=p.row*(sourceCanvas.height/ROWS);
+    const sw=sourceCanvas.width/COLS;
+    const sh=sourceCanvas.height/ROWS;
+    pCtx.drawImage(sourceCanvas,sx,sy,sw,sh,0,0,PSIZE,PSIZE);
+    pc.dataset.col=p.col;pc.dataset.row=p.row;
+    addDrag(pc);
     tray.appendChild(pc);
   });
 
@@ -185,58 +323,59 @@ function buildPuzzle(s){
 
 function drawBoard(){
   boardCtx.clearRect(0,0,boardCanvas.width,boardCanvas.height);
-  boardCtx.fillStyle='#ddd';
-  boardCtx.fillRect(0,0,boardCanvas.width,boardCanvas.height);
   for(let r=0;r<ROWS;r++){
     for(let c=0;c<COLS;c++){
       const bp=boardPieces[r*COLS+c];
       if(bp.filled){
-        boardCtx.drawImage(sourceCanvas,c*PSIZE,r*PSIZE,PSIZE,PSIZE,c*PSIZE,r*PSIZE,PSIZE,PSIZE);
+        const sx=c*(sourceCanvas.width/COLS);
+        const sy=r*(sourceCanvas.height/ROWS);
+        boardCtx.drawImage(sourceCanvas,sx,sy,sourceCanvas.width/COLS,sourceCanvas.height/ROWS,c*PSIZE,r*PSIZE,PSIZE,PSIZE);
       } else {
-        boardCtx.fillStyle='rgba(255,255,255,0.4)';
+        boardCtx.fillStyle='rgba(255,255,255,0.35)';
         boardCtx.fillRect(c*PSIZE+2,r*PSIZE+2,PSIZE-4,PSIZE-4);
-        boardCtx.strokeStyle='rgba(255,112,67,0.4)';
+        boardCtx.strokeStyle='rgba(255,112,67,0.5)';
         boardCtx.lineWidth=2;
         boardCtx.strokeRect(c*PSIZE+2,r*PSIZE+2,PSIZE-4,PSIZE-4);
-        boardCtx.fillStyle='rgba(255,112,67,0.3)';
-        boardCtx.font=`${PSIZE*0.35}px sans-serif`;
-        boardCtx.textAlign='center';
-        boardCtx.textBaseline='middle';
+        boardCtx.fillStyle='rgba(255,112,67,0.4)';
+        boardCtx.font=`${PSIZE*0.38}px sans-serif`;
+        boardCtx.textAlign='center';boardCtx.textBaseline='middle';
         boardCtx.fillText('?',c*PSIZE+PSIZE/2,r*PSIZE+PSIZE/2);
       }
     }
   }
+  // grid lines
+  boardCtx.strokeStyle='rgba(255,255,255,0.3)';boardCtx.lineWidth=1;
+  for(let c=1;c<COLS;c++){boardCtx.beginPath();boardCtx.moveTo(c*PSIZE,0);boardCtx.lineTo(c*PSIZE,boardCanvas.height);boardCtx.stroke();}
+  for(let r=1;r<ROWS;r++){boardCtx.beginPath();boardCtx.moveTo(0,r*PSIZE);boardCtx.lineTo(boardCanvas.width,r*PSIZE);boardCtx.stroke();}
 }
 
-function addDragToTrayPiece(pc){
-  let startX,startY,clone;
-
-  function onStart(ex,ey){
-    startX=ex;startY=ey;
+function addDrag(pc){
+  let clone=null;
+  function getXY(e){
+    if(e.touches)return{x:e.touches[0].clientX,y:e.touches[0].clientY};
+    return{x:e.clientX,y:e.clientY};
+  }
+  function onStart(e){
+    e.preventDefault();
+    const {x,y}=getXY(e);
     clone=pc.cloneNode(true);
-    clone.style.position='fixed';
-    clone.style.zIndex='999';
-    clone.style.pointerEvents='none';
-    clone.style.opacity='0.9';
-    clone.style.width=PSIZE+'px';
-    clone.style.height=PSIZE+'px';
-    positionClone(ex,ey);
+    clone.style.cssText=`position:fixed;z-index:999;pointer-events:none;opacity:0.9;width:${PSIZE}px;height:${PSIZE}px;border-radius:8px;border:2.5px solid #ff7043;`;
+    pos(x,y);
     document.body.appendChild(clone);
   }
-  function positionClone(ex,ey){
-    clone.style.left=(ex-PSIZE/2)+'px';
-    clone.style.top=(ey-PSIZE/2)+'px';
-  }
-  function onMove(ex,ey){ if(clone) positionClone(ex,ey); }
-  function onEnd(ex,ey){
-    if(!clone) return;
-    document.body.removeChild(clone); clone=null;
+  function pos(x,y){clone.style.left=(x-PSIZE/2)+'px';clone.style.top=(y-PSIZE/2)+'px';}
+  function onMove(e){e.preventDefault();if(!clone)return;const{x,y}=getXY(e);pos(x,y);}
+  function onEnd(e){
+    e.preventDefault();
+    if(!clone)return;
+    document.body.removeChild(clone);clone=null;
+    const coords=e.changedTouches?{x:e.changedTouches[0].clientX,y:e.changedTouches[0].clientY}:{x:e.clientX,y:e.clientY};
     const rect=boardCanvas.getBoundingClientRect();
-    const bx=ex-rect.left, by=ey-rect.top;
+    const bx=coords.x-rect.left,by=coords.y-rect.top;
     if(bx>=0&&by>=0&&bx<boardCanvas.width&&by<boardCanvas.height){
-      const tc=Math.floor(bx/PSIZE), tr=Math.floor(by/PSIZE);
-      const pcol=parseInt(pc.dataset.col), prow=parseInt(pc.dataset.row);
-      if(tc===pcol&&tr===prow){
+      const tc=Math.floor(bx/PSIZE),tr=Math.floor(by/PSIZE);
+      const pcol=parseInt(pc.dataset.col),prow=parseInt(pc.dataset.row);
+      if(tc===pcol&&tr===prow&&!boardPieces[tr*COLS+tc].filled){
         boardPieces[tr*COLS+tc].filled=true;
         drawBoard();
         pc.remove();
@@ -246,197 +385,55 @@ function addDragToTrayPiece(pc){
       }
     }
   }
-
-  pc.addEventListener('touchstart',e=>{e.preventDefault();const t=e.touches[0];onStart(t.clientX,t.clientY);},{passive:false});
-  pc.addEventListener('touchmove',e=>{e.preventDefault();const t=e.touches[0];onMove(t.clientX,t.clientY);},{passive:false});
-  pc.addEventListener('touchend',e=>{e.preventDefault();const t=e.changedTouches[0];onEnd(t.clientX,t.clientY);},{passive:false});
-  pc.addEventListener('mousedown',e=>{onStart(e.clientX,e.clientY);});
-  document.addEventListener('mousemove',e=>{if(clone)onMove(e.clientX,e.clientY);});
-  document.addEventListener('mouseup',e=>{if(clone)onEnd(e.clientX,e.clientY);});
+  pc.addEventListener('touchstart',onStart,{passive:false});
+  pc.addEventListener('touchmove',onMove,{passive:false});
+  pc.addEventListener('touchend',onEnd,{passive:false});
+  pc.addEventListener('mousedown',onStart);
+  document.addEventListener('mousemove',onMove);
+  document.addEventListener('mouseup',onEnd);
 }
 
 function shake(el){
-  el.style.transition='transform 0.1s';
-  el.style.transform='translateX(-8px)';
-  setTimeout(()=>el.style.transform='translateX(8px)',100);
-  setTimeout(()=>el.style.transform='translateX(0)',200);
+  el.style.transition='transform 0.15s';
+  el.style.transform='translateX(-10px)';
+  setTimeout(()=>el.style.transform='translateX(10px)',150);
+  setTimeout(()=>el.style.transform='',300);
 }
 
 function checkComplete(){
-  if(boardPieces.every(p=>p.filled)){
-    score+=10;
-    document.getElementById('score').textContent=score;
-    document.getElementById('clear-msg').textContent=`+10てん！ごうけい ${score} てん！`;
-    const ov=document.getElementById('clear-overlay');
-    ov.style.display='flex';
+  if(!boardPieces.every(p=>p.filled))return;
+  score+=10;
+  document.getElementById('score-val').textContent=score;
+  document.getElementById('clear-msg').textContent=`+10てん！ごうけい ${score} てん！`;
+  const ov=document.getElementById('clear-overlay');
+  ov.style.display='flex';
+}
+
+function nextPuzzle(){
+  document.getElementById('clear-overlay').style.display='none';
+  if(currentPreset){
+    const idx=(PRESETS.indexOf(currentPreset)+1)%PRESETS.length;
+    startPreset(PRESETS[idx]);
+  } else {
+    const saved=getSavedImages();
+    if(saved.length>0){
+      const idx=saved.findIndex(i=>i.id===currentImageData.id);
+      const next=saved[(idx+1)%saved.length];
+      startImagePuzzle(next);
+    } else {
+      closePuzzle();
+    }
   }
 }
 
-function shuffle(arr){for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}}
-
-// DRAW FUNCTIONS
-function drawElephant(ctx,W,H){
-  const cx=W/2,cy=H/2,s=Math.min(W,H)/160;
-  ctx.fillStyle='#90a4ae';
-  ctx.beginPath();ctx.ellipse(cx,cy+10*s,55*s,45*s,0,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle='#b0bec5';
-  ctx.beginPath();ctx.ellipse(cx,cy-40*s,38*s,32*s,0,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle='#90a4ae';
-  ctx.beginPath();ctx.ellipse(cx-40*s,cy-30*s,12*s,18*s,-0.3,0,Math.PI*2);ctx.fill();
-  ctx.beginPath();ctx.ellipse(cx+40*s,cy-30*s,12*s,18*s,0.3,0,Math.PI*2);ctx.fill();
-  ctx.beginPath();ctx.moveTo(cx+10*s,cy-25*s);ctx.bezierCurveTo(cx+30*s,cy+5*s,cx+20*s,cy+40*s,cx,cy+55*s);ctx.lineWidth=10*s;ctx.strokeStyle='#90a4ae';ctx.lineCap='round';ctx.stroke();
-  ctx.fillStyle='#333';
-  ctx.beginPath();ctx.arc(cx-12*s,cy-48*s,5*s,0,Math.PI*2);ctx.fill();
-  ctx.beginPath();ctx.arc(cx+12*s,cy-48*s,5*s,0,Math.PI*2);ctx.fill();
+function closePuzzle(){
+  document.getElementById('puzzle-screen').style.display='none';
+  document.getElementById('clear-overlay').style.display='none';
+  document.getElementById('top-screen').style.display='flex';
+  renderGrid();
 }
 
-function drawLion(ctx,W,H){
-  const cx=W/2,cy=H/2,s=Math.min(W,H)/160;
-  ctx.fillStyle='#e65100';
-  ctx.beginPath();ctx.arc(cx,cy-10*s,60*s,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle='#ffcc80';
-  ctx.beginPath();ctx.arc(cx,cy-10*s,42*s,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle='#ffe0b2';
-  ctx.beginPath();ctx.ellipse(cx,cy+30*s,35*s,22*s,0,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle='#fff';
-  ctx.beginPath();ctx.ellipse(cx,cy+8*s,18*s,12*s,0,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle='#e65100';
-  ctx.beginPath();ctx.arc(cx,cy+5*s,8*s,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle='#333';
-  ctx.beginPath();ctx.arc(cx-16*s,cy-18*s,7*s,0,Math.PI*2);ctx.fill();
-  ctx.beginPath();ctx.arc(cx+16*s,cy-18*s,7*s,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle='#fff';
-  ctx.beginPath();ctx.arc(cx-14*s,cy-20*s,3*s,0,Math.PI*2);ctx.fill();
-  ctx.beginPath();ctx.arc(cx+14*s,cy-20*s,3*s,0,Math.PI*2);ctx.fill();
-}
-
-function drawPanda(ctx,W,H){
-  const cx=W/2,cy=H/2,s=Math.min(W,H)/160;
-  ctx.fillStyle='#fff';
-  ctx.beginPath();ctx.ellipse(cx,cy+15*s,50*s,45*s,0,0,Math.PI*2);ctx.fill();
-  ctx.beginPath();ctx.ellipse(cx,cy-35*s,38*s,35*s,0,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle='#333';
-  ctx.beginPath();ctx.ellipse(cx-22*s,cy-48*s,12*s,14*s,0,0,Math.PI*2);ctx.fill();
-  ctx.beginPath();ctx.ellipse(cx+22*s,cy-48*s,12*s,14*s,0,0,Math.PI*2);ctx.fill();
-  ctx.beginPath();ctx.ellipse(cx-14*s,cy-32*s,12*s,9*s,-0.4,0,Math.PI*2);ctx.fill();
-  ctx.beginPath();ctx.ellipse(cx+14*s,cy-32*s,12*s,9*s,0.4,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle='#555';
-  ctx.beginPath();ctx.arc(cx-12*s,cy-32*s,5*s,0,Math.PI*2);ctx.fill();
-  ctx.beginPath();ctx.arc(cx+12*s,cy-32*s,5*s,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle='#333';
-  ctx.beginPath();ctx.arc(cx,cy-22*s,8*s,0,Math.PI*2);ctx.fill();
-}
-
-function drawPenguin(ctx,W,H){
-  const cx=W/2,cy=H/2,s=Math.min(W,H)/160;
-  ctx.fillStyle='#1a237e';
-  ctx.beginPath();ctx.ellipse(cx,cy+15*s,42*s,52*s,0,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle='#fff';
-  ctx.beginPath();ctx.ellipse(cx,cy+20*s,26*s,38*s,0,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle='#1a237e';
-  ctx.beginPath();ctx.ellipse(cx,cy-42*s,28*s,26*s,0,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle='#fff';
-  ctx.beginPath();ctx.arc(cx-10*s,cy-46*s,7*s,0,Math.PI*2);ctx.fill();
-  ctx.beginPath();ctx.arc(cx+10*s,cy-46*s,7*s,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle='#333';
-  ctx.beginPath();ctx.arc(cx-10*s,cy-46*s,4*s,0,Math.PI*2);ctx.fill();
-  ctx.beginPath();ctx.arc(cx+10*s,cy-46*s,4*s,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle='#ff8f00';
-  ctx.beginPath();ctx.moveTo(cx,cy-35*s);ctx.lineTo(cx-9*s,cy-28*s);ctx.lineTo(cx+9*s,cy-28*s);ctx.closePath();ctx.fill();
-}
-
-function drawButterfly(ctx,W,H){
-  const cx=W/2,cy=H/2,s=Math.min(W,H)/160;
-  ctx.fillStyle='#f06292';
-  ctx.beginPath();ctx.ellipse(cx-30*s,cy-20*s,38*s,28*s,0.5,0,Math.PI*2);ctx.fill();
-  ctx.beginPath();ctx.ellipse(cx+30*s,cy-20*s,38*s,28*s,-0.5,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle='#f8bbd0';
-  ctx.beginPath();ctx.ellipse(cx-28*s,cy+18*s,28*s,20*s,0.3,0,Math.PI*2);ctx.fill();
-  ctx.beginPath();ctx.ellipse(cx+28*s,cy+18*s,28*s,20*s,-0.3,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle='#fff176';
-  ctx.beginPath();ctx.arc(cx-25*s,cy-22*s,10*s,0,Math.PI*2);ctx.fill();
-  ctx.beginPath();ctx.arc(cx+25*s,cy-22*s,10*s,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle='#333';
-  ctx.beginPath();ctx.ellipse(cx,cy,6*s,40*s,0,0,Math.PI*2);ctx.fill();
-}
-
-function drawLadybug(ctx,W,H){
-  const cx=W/2,cy=H/2,s=Math.min(W,H)/160;
-  ctx.fillStyle='#e53935';
-  ctx.beginPath();ctx.arc(cx,cy+5*s,55*s,Math.PI,0);ctx.closePath();ctx.fill();
-  ctx.fillStyle='#333';
-  ctx.beginPath();ctx.arc(cx,cy-42*s,20*s,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle='#fff';
-  ctx.beginPath();ctx.arc(cx-8*s,cy-44*s,5*s,0,Math.PI*2);ctx.fill();
-  ctx.beginPath();ctx.arc(cx+8*s,cy-44*s,5*s,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle='#333';
-  ctx.beginPath();ctx.moveTo(cx,cy-20*s);ctx.lineTo(cx,cy+10*s);ctx.lineWidth=4*s;ctx.stroke();
-  ctx.beginPath();ctx.arc(cx-20*s,cy-5*s,14*s,0,Math.PI*2);ctx.fill();
-  ctx.beginPath();ctx.arc(cx+20*s,cy-5*s,14*s,0,Math.PI*2);ctx.fill();
-  ctx.beginPath();ctx.arc(cx-18*s,cy+22*s,10*s,0,Math.PI*2);ctx.fill();
-  ctx.beginPath();ctx.arc(cx+18*s,cy+22*s,10*s,0,Math.PI*2);ctx.fill();
-}
-
-function drawBee(ctx,W,H){
-  const cx=W/2,cy=H/2,s=Math.min(W,H)/160;
-  ctx.fillStyle='#f9a825';
-  ctx.beginPath();ctx.ellipse(cx,cy+10*s,32*s,44*s,0,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle='#333';
-  ctx.fillRect(cx-32*s,cy-8*s,64*s,12*s);
-  ctx.fillRect(cx-32*s,cy+12*s,64*s,12*s);
-  ctx.fillStyle='rgba(200,230,255,0.6)';
-  ctx.beginPath();ctx.ellipse(cx-30*s,cy-25*s,28*s,14*s,-0.4,0,Math.PI*2);ctx.fill();
-  ctx.beginPath();ctx.ellipse(cx+30*s,cy-25*s,28*s,14*s,0.4,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle='#f9a825';
-  ctx.beginPath();ctx.ellipse(cx,cy-35*s,20*s,18*s,0,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle='#333';
-  ctx.beginPath();ctx.arc(cx-7*s,cy-38*s,4*s,0,Math.PI*2);ctx.fill();
-  ctx.beginPath();ctx.arc(cx+7*s,cy-38*s,4*s,0,Math.PI*2);ctx.fill();
-}
-
-function drawStar(ctx,W,H){
-  const cx=W/2,cy=H/2,s=Math.min(W,H)/160;
-  ctx.fillStyle='#ffd600';
-  ctx.beginPath();
-  for(let i=0;i<5;i++){
-    const a=i*Math.PI*2/5-Math.PI/2;
-    const b=a+Math.PI/5;
-    if(i===0)ctx.moveTo(cx+Math.cos(a)*65*s,cy+Math.sin(a)*65*s);
-    else ctx.lineTo(cx+Math.cos(a)*65*s,cy+Math.sin(a)*65*s);
-    ctx.lineTo(cx+Math.cos(b)*28*s,cy+Math.sin(b)*28*s);
-  }
-  ctx.closePath();ctx.fill();
-  ctx.fillStyle='#fff';
-  ctx.beginPath();ctx.arc(cx-15*s,cy-15*s,8*s,0,Math.PI*2);ctx.fill();
-  ctx.beginPath();ctx.arc(cx-5*s,cy-25*s,5*s,0,Math.PI*2);ctx.fill();
-}
-
-function drawHeart(ctx,W,H){
-  const cx=W/2,cy=H/2,s=Math.min(W,H)/160;
-  ctx.fillStyle='#e53935';
-  ctx.beginPath();
-  ctx.moveTo(cx,cy+45*s);
-  ctx.bezierCurveTo(cx-80*s,cy,cx-80*s,cy-50*s,cx,cy-20*s);
-  ctx.bezierCurveTo(cx+80*s,cy-50*s,cx+80*s,cy,cx,cy+45*s);
-  ctx.fill();
-  ctx.fillStyle='rgba(255,255,255,0.3)';
-  ctx.beginPath();ctx.ellipse(cx-20*s,cy-25*s,18*s,10*s,-0.5,0,Math.PI*2);ctx.fill();
-}
-
-function drawRocket(ctx,W,H){
-  const cx=W/2,cy=H/2,s=Math.min(W,H)/160;
-  ctx.fillStyle='#e53935';
-  ctx.beginPath();ctx.moveTo(cx,cy-65*s);ctx.lineTo(cx-22*s,cy+10*s);ctx.lineTo(cx+22*s,cy+10*s);ctx.closePath();ctx.fill();
-  ctx.fillStyle='#e8eaf6';
-  ctx.fillRect(cx-22*s,cy+10*s,44*s,40*s);
-  ctx.fillStyle='#42a5f5';
-  ctx.beginPath();ctx.arc(cx,cy-10*s,14*s,0,Math.PI*2);ctx.fill();
-  ctx.fillStyle='#e53935';
-  ctx.beginPath();ctx.moveTo(cx-22*s,cy+10*s);ctx.lineTo(cx-36*s,cy+30*s);ctx.lineTo(cx-22*s,cy+50*s);ctx.closePath();ctx.fill();
-  ctx.beginPath();ctx.moveTo(cx+22*s,cy+10*s);ctx.lineTo(cx+36*s,cy+30*s);ctx.lineTo(cx+22*s,cy+50*s);ctx.closePath();ctx.fill();
-  ctx.fillStyle='#ff8f00';
-  ctx.beginPath();ctx.ellipse(cx,cy+60*s,14*s,18*s,0,0,Math.PI*2);ctx.fill();
-}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}}
 
 renderGrid();
 </script>
