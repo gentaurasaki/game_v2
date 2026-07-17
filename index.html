@@ -312,7 +312,7 @@ function openPuzzleScreen(name,srcCanvas){
   const tray=document.getElementById('tray');
   tray.innerHTML='';
   // Tray pieces: smaller size (50% of board piece)
-  const trayPieceSize=Math.floor(PSIZE*0.6);
+  const trayPieceSize=Math.floor(PSIZE*0.8);
   pieces.forEach(p=>{
     const pc=document.createElement('canvas');
     pc.width=trayPieceSize;pc.height=trayPieceSize;
