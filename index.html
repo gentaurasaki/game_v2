@@ -7,25 +7,28 @@
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-<section id="home-screen" class="screen active">
+<section id="home" class="screen active">
   <header class="app-header rainbow"><h1>🌈 こどもあそびらんど</h1><div class="small-info">すきなあぷりをえらんでね</div></header>
   <main class="home-grid">
-    <button class="home-card" onclick="App.show('puzzle')"><div class="home-icon">🧩</div><div class="home-title">えあわせぱずる</div></button>
-    <button class="home-card" onclick="App.show('mogura')"><div class="home-icon">🐼</div><div class="home-title">どうぶつたっち</div></button>
-    <button class="home-card" onclick="App.show('hiragana')"><div class="home-icon">🐘</div><div class="home-title">ひらがなぱずる</div></button>
+    <button class="home-card" onclick="App.show('puzzle')"><div class="home-icon">🧩</div><div>えあわせぱずる</div></button>
+    <button class="home-card" onclick="App.show('mogura')"><div class="home-icon">🐼</div><div>どうぶつたっち</div></button>
+    <button class="home-card" onclick="App.show('hiragana')"><div class="home-icon">🐘</div><div>ひらがなぱずる</div></button>
+    <button class="home-card" onclick="App.show('storage')"><div class="home-icon">📷</div><div>しゃしんかんり</div></button>
   </main>
 </section>
-<section id="puzzle-screen" class="screen"></section>
-<section id="mogura-screen" class="screen"></section>
-<section id="hiragana-screen" class="screen"></section>
+<section id="puzzle" class="screen"></section>
+<section id="mogura" class="screen"></section>
+<section id="hiragana" class="screen"></section>
+<section id="storage" class="screen"></section>
 <script src="js/storage.js"></script>
+<script src="js/storagePage.js"></script>
 <script src="js/puzzle.js"></script>
 <script src="js/mogura.js"></script>
 <script src="js/hiragana.js"></script>
 <script>
 const App={
-  show(name){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(name+'-screen').classList.add('active');if(name==='puzzle')PuzzleApp.init();if(name==='mogura')MoguraApp.init();if(name==='hiragana')HiraganaApp.init();},
-  home(){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById('home-screen').classList.add('active');}
+  show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');({puzzle:PuzzleApp,mogura:MoguraApp,hiragana:HiraganaApp,storage:StoragePage}[id])?.init?.();},
+  home(){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById('home').classList.add('active');}
 };
 </script>
 </body>
