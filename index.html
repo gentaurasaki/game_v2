@@ -13,22 +13,25 @@
     <button class="home-card" onclick="App.show('puzzle')"><div class="home-icon">🧩</div><div>えあわせぱずる</div></button>
     <button class="home-card" onclick="App.show('mogura')"><div class="home-icon">🐼</div><div>どうぶつたっち</div></button>
     <button class="home-card" onclick="App.show('hiragana')"><div class="home-icon">🐘</div><div>ひらがなぱずる</div></button>
+    <button class="home-card" onclick="App.show('action')"><div class="home-icon">👊</div><div>わくわくぱんち</div></button>
     <button class="home-card" onclick="App.show('storage')"><div class="home-icon">📷</div><div>しゃしんかんり</div></button>
   </main>
 </section>
 <section id="puzzle" class="screen"></section>
 <section id="mogura" class="screen"></section>
 <section id="hiragana" class="screen"></section>
+<section id="action" class="screen"></section>
 <section id="storage" class="screen"></section>
 <script src="js/storage.js"></script>
 <script src="js/storagePage.js"></script>
 <script src="js/puzzle.js"></script>
 <script src="js/mogura.js"></script>
 <script src="js/hiragana.js"></script>
+<script src="js/action.js"></script>
 <script>
 const App={
-  show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');({puzzle:PuzzleApp,mogura:MoguraApp,hiragana:HiraganaApp,storage:StoragePage}[id])?.init?.();},
-  home(){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById('home').classList.add('active');}
+  show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');({puzzle:PuzzleApp,mogura:MoguraApp,hiragana:HiraganaApp,action:ActionApp,storage:StoragePage}[id])?.init?.();},
+  home(){try{ActionApp?.stop?.()}catch(e){};try{MoguraApp?.stop?.()}catch(e){};document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById('home').classList.add('active');}
 };
 </script>
 </body>
